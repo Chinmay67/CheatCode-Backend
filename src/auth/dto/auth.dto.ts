@@ -29,8 +29,8 @@ export class loginDTO{
     email: string;
 
     @IsNotEmpty()
-    @isString()
     @MinLength(6)
+    @IsString()
     password:string
 
 
