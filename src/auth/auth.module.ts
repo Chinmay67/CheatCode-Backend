@@ -5,6 +5,7 @@ import { PrismaModule } from 'src/prisma/prisma.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { GoogleStrategy } from './strategy';
 
 @Module({
     imports : [PrismaModule , PassportModule  , JwtModule.register({
@@ -12,7 +13,7 @@ import { ConfigService } from '@nestjs/config';
         signOptions: { expiresIn: '1h' }, 
     })] ,
     controllers: [AuthController],
-    providers: [AuthService],
+    providers: [AuthService , GoogleStrategy],
 })
 export class AuthModule {
    

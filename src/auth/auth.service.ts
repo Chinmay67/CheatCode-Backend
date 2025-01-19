@@ -132,9 +132,36 @@ export class AuthService {
         }
     }
 
-    async loginUsingGoogle(){
-        const response=validate
+    async validateGoogleUser(email: string, firstName: string, lastName: string) {
+        let user = await this.prisma.user.findUnique({ where: { email } });
+    
+        if (!user) {
+            const userName = email.split('@')[0];
+            user = await this.prisma.user.create({
+                data: {
+                    userName,
+                    email,
+                    firstName,
+                    lastName,
+                },
+            });
+        }
+    
+        const token = this.generateToken(user.id, user.email);
+    
+        return {
+            success: true,
+            message: "Google login successful",
+            access_token: token,
+            user: { email: user.email, firstName: user.firstName, lastName: user.lastName },
+        };
+    }
+    
+    generateToken(userId: number, email: string): string {
+        const payload = { sub: userId, email }; 
+        return this.jwtService.sign(payload);
+    }
+    
     }
 
 
-}
