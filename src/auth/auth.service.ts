@@ -117,5 +117,24 @@ export class AuthService {
         }
     }
 
+    async jwtForGoogle(email: string, googleId: string){
+        try{
+        const payload= { email, googleId}
+        return{
+            success: true,
+            access_token: this.jwtService.sign(payload)
+        }}
+        catch(error){
+            return{
+                success:false,
+                message:error.message
+            }
+        }
+    }
+
+    async loginUsingGoogle(){
+        const response=validate
+    }
+
 
 }
