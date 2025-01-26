@@ -3,11 +3,13 @@ import { SignupDTO, loginDTO } from "./dto";
 import { PrismaService } from "src/prisma/prisma.service";
 import { JwtService } from '@nestjs/jwt';
 import * as argon from "argon2"
+import { MailService } from "src/mails/mail.service";
+import { verificationMailDto } from "src/mails/dto";
 
 @Injectable()
 export class AuthService {
 
-    constructor(private prisma: PrismaService, private jwtService: JwtService) { }
+    constructor(private prisma: PrismaService, private jwtService: JwtService , private mailService : MailService) { }
 
     async signup(dto: SignupDTO) {
         try {
@@ -23,23 +25,21 @@ export class AuthService {
                 }
             })
 
-            const loggedInUser = {
-                email: dto.email,
-                password: dto.password
-            }
+            const mailResponse = await this.sendVerficiationMail(dto.email);
 
-            const response = await this.login(loggedInUser);
-
-            if (response.success == true) {
-                const payload = { username: dto.email, password: dto.password }
-                return {
-                    success: true,
-                    access_token: this.jwtService.sign(payload),
-                    user: response.user
+            if(!mailResponse.success){
+                return{
+                    success : false , 
+                    message : "PLEASE TRY AGAIN OTP WAS NOT SENT"
                 }
+            };
+
+            return {
+                success : true , 
+                message : "MAIL HAS BEEN SENT SUCCESSFULLY" , 
+                otp : mailResponse.otp
             }
 
-            return response;
         } catch (error) {
             let message = "An unexpected error occured";
 
@@ -160,6 +160,32 @@ export class AuthService {
     generateToken(userId: number, email: string): string {
         const payload = { sub: userId, email }; 
         return this.jwtService.sign(payload);
+    }
+
+    async sendVerficiationMail(email : string){
+        try{
+            const otp = Math.floor(100000 + Math.random() * 900000);
+
+            const dto : verificationMailDto = {
+                from : process.env.GMAIL_USER , 
+                to : email , 
+                otp : otp ,
+                subject : "PLEASE VERIFY YOUR EMAIL"  
+            }
+
+            const response = await this.mailService.sendMail(dto);
+            
+            return {
+                response : response , 
+                otp : otp
+            }
+
+        }catch(error){
+            return {
+                success: false,
+                message: error.message
+            }
+        }
     }
     
     }
