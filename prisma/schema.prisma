@@ -30,5 +30,13 @@ model User {
   role      Role     @default(USER)
   userName  String   @unique
   googleID  String?   @unique
+  isVerified Boolean  @default(false)
 }
 
+
+model otp_verify {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  email     String   @unique
+  otp       Int  
+}
