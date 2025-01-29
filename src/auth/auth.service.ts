@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { SignupDTO, loginDTO } from './dto';
+import { SignupDTO, loginDTO , OtpDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import * as argon from 'argon2';
 import { MailService } from 'src/mails/mail.service';
 import { verificationMailDto } from 'src/mails/dto';
 import { verify } from 'crypto';
+import { ColdObservable } from 'rxjs/internal/testing/ColdObservable';
 
 @Injectable()
 export class AuthService {
@@ -202,15 +203,16 @@ export class AuthService {
         },
         update: {
           otp: otp,
+          createdAt: new Date(),
         },
         create: {
           otp: otp,
           email: email,
+          createdAt: new Date(), 
         },
       });
-
-      console.log(response);
-
+  
+  
       return {
         success: true,
       };
@@ -221,24 +223,28 @@ export class AuthService {
       };
     }
   }
-  async verifyOtp(email: string, otp: number) {
+  
+  async verifyOtp(dto : OtpDto) {
     try {
       const currentOtp = await this.prisma.otp_verify.findFirst({
         where: {
-          email: email,
+          email: dto.email,
         },
       });
+
 
       if (currentOtp) {
         const now = new Date();
         const otpCreationTime = new Date(currentOtp.createdAt);
 
+        
+
         const timeDifference = now.getTime() - otpCreationTime.getTime();
-        if (timeDifference <= 10 * 60 * 1000) {
-          if (currentOtp.otp === otp) {
+        if (timeDifference <= 10 * 60 * 10000) {
+          if (currentOtp.otp === dto.otp) {
             const user = await this.prisma.user.update({
               where: {
-                email: email,
+                email: dto.email,
               },
               data: {
                 isVerified: true,

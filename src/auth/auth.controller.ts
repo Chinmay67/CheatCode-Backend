@@ -1,14 +1,15 @@
 import { Body, Post } from '@nestjs/common';
-import { loginDTO, SignupDTO } from './dto';
+import { loginDTO, SignupDTO  , OtpDto} from './dto';
 import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
 import { Request, Response } from 'express';
 import { User } from '@prisma/client';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService ) {}
 
   @Post('signUp')
   async signup(@Body() dto: SignupDTO) {
@@ -16,8 +17,8 @@ export class AuthController {
   }
 
   @Post('verifyOtp')
-  async verifyOtp(@Body() otp: number, email: string) {
-    return this.authService.verifyOtp(email, otp);
+  async verifyOtp(@Body() dto : OtpDto) {
+    return this.authService.verifyOtp(dto)
   }
   @Post('logIn')
   async login(@Body() dto: loginDTO) {
