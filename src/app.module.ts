@@ -6,6 +6,7 @@ import { UserModule } from './user/user.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { MailsModule } from './mails/mails.module';
+import { CodeExecutionModule } from './code_execution/code_execution.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { MailsModule } from './mails/mails.module';
       isGlobal: true,
     }),
     MailsModule,
+    CodeExecutionModule ,
   ],
   controllers: [AppController],
   providers: [AppService],
