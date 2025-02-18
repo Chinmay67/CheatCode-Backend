@@ -7,7 +7,7 @@ export class CodeExecutionController{
     constructor(private ces : CodeExecutionService){}
 
     @Post('execute')
-    async executeCode(@Body() code , @Body() language){
+    async executeCode(@Body() {code , language}){
         return await this.ces.executeCode(code , language)
     }
 }
