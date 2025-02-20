@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { SignupDTO, loginDTO , OtpDto } from './dto';
+import { SignupDTO, loginDTO, OtpDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import * as argon from 'argon2';
@@ -29,7 +29,7 @@ export class AuthService {
         },
       });
       const mailResponse = await this.sendVerficiationMail(dto.email);
-      if (mailResponse.success===false) {
+      if (mailResponse.success === false) {
         return {
           success: false,
           message: 'unable to send mail',
@@ -208,11 +208,10 @@ export class AuthService {
         create: {
           otp: otp,
           email: email,
-          createdAt: new Date(), 
+          createdAt: new Date(),
         },
       });
-  
-  
+
       return {
         success: true,
       };
@@ -223,8 +222,8 @@ export class AuthService {
       };
     }
   }
-  
-  async verifyOtp(dto : OtpDto) {
+
+  async verifyOtp(dto: OtpDto) {
     try {
       const currentOtp = await this.prisma.otp_verify.findFirst({
         where: {
@@ -232,12 +231,9 @@ export class AuthService {
         },
       });
 
-
       if (currentOtp) {
         const now = new Date();
         const otpCreationTime = new Date(currentOtp.createdAt);
-
-        
 
         const timeDifference = now.getTime() - otpCreationTime.getTime();
         if (timeDifference <= 10 * 60 * 10000) {

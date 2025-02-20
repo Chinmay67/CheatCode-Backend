@@ -1,22 +1,20 @@
-import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
-export class verificationMailDto  {
+export class verificationMailDto {
+  constructor(num: number, recipient: string) {
+    this.otp = num;
+    this.to = recipient;
+  }
 
-    constructor(num : number , recipient : string){
-        this.otp = num
-        this.to = recipient
-    }
+  from: string;
 
-    from : string; 
+  @IsNotEmpty()
+  @IsString()
+  to: string;
 
-    @IsNotEmpty()
-    @IsString()
-    to : string
+  subject: string;
 
-    subject : string;
-
-    @IsNumber()
-    @IsNotEmpty()
-    otp : number
-
+  @IsNumber()
+  @IsNotEmpty()
+  otp: number;
 }
